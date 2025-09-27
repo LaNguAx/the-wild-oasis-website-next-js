@@ -8,8 +8,8 @@ export interface Cabin {
   maxCapacity: number
   regularPrice: number
   discount: number
-  image: string,
-  description: string
+  image: string
+  description?: string
 }
 
 export interface CabinCardProps {
@@ -22,12 +22,7 @@ export default function CabinCard({ cabin }: CabinCardProps) {
   return (
     <div className="flex border-primary-800 border">
       <div className="flex-1 relative">
-        <Image
-          src={image}
-          fill
-          alt={`Cabin ${name}`}
-          className="object-cover border-r border-primary-800"
-        />
+        <Image src={image} fill alt={`Cabin ${name}`} className="object-cover border-r border-primary-800" />
       </div>
 
       <div className="flex-grow">
