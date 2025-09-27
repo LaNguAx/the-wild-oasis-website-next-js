@@ -2,7 +2,6 @@ import { updateReservation } from '@/app/_lib/actions'
 import { getBooking, getCabin } from '@/app/_lib/data-service'
 import UpdateReservationButton from '@/app/_components/UpdateReservationButton'
 import { auth } from '@/app/_lib/auth'
-import { notFound } from 'next/navigation'
 
 export default async function Page({ params }: { params: Promise<{ reservationId: string }> }) {
   const { reservationId } = await params

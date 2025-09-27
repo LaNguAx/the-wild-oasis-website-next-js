@@ -1,8 +1,7 @@
 'use client'
 import Image from 'next/image'
-import { useState } from 'react'
 import { updateGuest } from '@/app/_lib/actions'
-import {useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
 
 type Guest = {
   fullName: string
@@ -13,10 +12,7 @@ type Guest = {
 }
 
 export default function UpdateProfileForm({ children, guest }: { children: React.ReactNode; guest: Guest }) {
-  const [count, setCount] = useState(0)
-
   const countryFlag = guest.countryFlag ?? ''
-  const nationality = guest.nationality ?? ''
 
   return (
     <form action={updateGuest} className="bg-primary-900 py-8 px-12 text-lg flex gap-6 flex-col">
@@ -68,7 +64,10 @@ function Button() {
   const { pending } = useFormStatus()
 
   return (
-    <button disabled={pending} className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300">
+    <button
+      disabled={pending}
+      className="bg-accent-500 px-8 py-4 text-primary-800 font-semibold hover:bg-accent-600 transition-all disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-300"
+    >
       {pending ? `Updating profile...` : `Update profile`}
     </button>
   )

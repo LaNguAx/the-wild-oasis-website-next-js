@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
-import { createGuest, getGuest } from './data-service'
 
 const authConfig = {
   providers: [Google],
@@ -9,25 +8,34 @@ const authConfig = {
     signOut: '/logout',
   },
   callbacks: {
-    authorized: async ({ auth, request }: { auth: unknown; request: Request }) => {
+    authorized: async ({ auth }: { auth: unknown }) => {
       // @ts-expect-error NextAuth is not typed
       return !!auth?.user
     },
     signIn: async ({ user }: { user: { email: string; name: string } }) => {
       try {
-        const guest = await getGuest(user.email!)
-        if (!guest) {
-          await createGuest({ email: user.email, fullName: user.name })
-        }
+        // Lazy-load to keep middleware (Edge) bundle free of Node-only deps
+        const { getGuest, createGuest } = await import('./data-service')
+
+        if (!user?.email) return false
+
+        const guest = await getGuest(user.email)
+        if (!guest) await createGuest({ email: user.email, fullName: user.name })
         return true
       } catch (error) {
         console.error(error)
         return false
       }
     },
-    session: async ({ session, token }: { session: unknown; token: unknown }) => {
-      const guest = await getGuest(session?.user?.email!)
-      session.user.guestId = guest?.id
+    session: async ({ session }: { session: unknown }) => {
+      // Lazy-load to avoid importing supabase on the Edge
+      const { getGuest } = await import('./data-service')
+
+      const userEmail = (session as any)?.user?.email
+      if (!userEmail) return session
+
+      const guest = await getGuest(userEmail)
+      if ((session as any)?.user) (session as any).user.guestId = guest?.id
       return session
     },
   },

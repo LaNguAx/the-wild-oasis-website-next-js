@@ -10,16 +10,20 @@ export const formatDistanceFromNow = (dateStr: string) =>
     addSuffix: true,
   }).replace('about ', '')
 
-function ReservationCard({ booking, onDelete:handleDelete }: { booking: Booking, onDelete: (bookingId: string) => void }) {
+function ReservationCard({
+  booking,
+  onDelete: handleDelete,
+}: {
+  booking: Booking
+  onDelete: (bookingId: string) => void
+}) {
   const {
     id,
-    guestId,
     startDate,
     endDate,
     numNights,
     totalPrice,
     numGuests,
-    status,
     created_at,
     cabins: { name, image },
   } = booking
