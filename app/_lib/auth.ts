@@ -1,6 +1,15 @@
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 
+type SessionUser = {
+  email?: string | null
+  guestId?: string | null
+}
+
+type SessionShape = {
+  user?: SessionUser | null
+}
+
 const authConfig = {
   providers: [Google],
   pages: {
@@ -8,7 +17,7 @@ const authConfig = {
     signOut: '/logout',
   },
   callbacks: {
-    authorized: async ({ auth }: { auth: unknown }) => {
+    authorized: async ({ auth }: { auth: SessionShape | null }) => {
       // @ts-expect-error NextAuth is not typed
       return !!auth?.user
     },
@@ -27,15 +36,15 @@ const authConfig = {
         return false
       }
     },
-    session: async ({ session }: { session: unknown }) => {
+    session: async ({ session }: { session: SessionShape }) => {
       // Lazy-load to avoid importing supabase on the Edge
       const { getGuest } = await import('./data-service')
 
-      const userEmail = (session as any)?.user?.email
+      const userEmail = session?.user?.email ?? null
       if (!userEmail) return session
 
       const guest = await getGuest(userEmail)
-      if ((session as any)?.user) (session as any).user.guestId = guest?.id
+      if (session?.user) session.user.guestId = guest?.id ?? null
       return session
     },
   },
