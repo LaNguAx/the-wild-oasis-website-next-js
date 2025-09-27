@@ -24,8 +24,10 @@ export const metadata = {
 export default async function Page() {
   // CHANGE
   const session = await auth()
-  if (!session?.user?.guestId) return notFound()
-  const bookings: Booking[] = await getBookings(session.user.guestId)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const guestId = (session as any)?.user?.guestId as string | null
+  if (!guestId) return notFound()
+  const bookings: Booking[] = await getBookings(guestId)
 
   return (
     <div>

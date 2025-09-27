@@ -8,7 +8,9 @@ export default async function Page({ params }: { params: Promise<{ reservationId
   const booking = await getBooking(reservationId)
   const cabin = await getCabin(booking?.cabinId)
   const session = await auth()
-  if (session?.user?.guestId !== booking?.guestId) throw new Error('You are not authorized to edit this reservation!')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const guestId = (session as any)?.user?.guestId as string | null
+  if (guestId !== booking?.guestId) throw new Error('You are not authorized to edit this reservation!')
 
   const { maxCapacity } = cabin || -1
   const { numGuests: currentNumGuests, observations: currentObservations } = booking || -1

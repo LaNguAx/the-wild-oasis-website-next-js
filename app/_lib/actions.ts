@@ -22,7 +22,9 @@ export async function updateGuest(formData: FormData) {
     throw new Error('National ID must be 6-12 characters long and contain only letters and numbers')
 
   const updateData = { nationality, countryFlag, nationalID }
-  await updateGuestDataService(session?.user?.guestId ?? '', updateData)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const guestId = (session as any)?.user?.guestId as string | null
+  await updateGuestDataService(guestId ?? '', updateData)
   revalidatePath('/account/profile')
 }
 
@@ -41,7 +43,9 @@ export async function signOutAction() {
 export async function deleteReservation(bookingId: string) {
   const session = await auth()
   if (!session) throw new Error('You must be logged in!')
-  const guestBooking = await getBookings(session?.user?.guestId ?? '')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const guestId = (session as any)?.user?.guestId as string | null
+  const guestBooking = await getBookings(guestId ?? '')
   const guestBookingIds = guestBooking.map((booking) => booking.id)
   if (!guestBookingIds.includes(bookingId)) throw new Error('You are not authorized to delete this reservation!')
 
@@ -56,10 +60,13 @@ export async function updateReservation(formData: FormData) {
   const numGuests = formData.get('numGuests')?.toString() ?? ''
   const observations = formData.get('observations')?.toString() ?? ''
 
-  const guestBooking = await getBookings(session?.user?.guestId ?? '')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const guestId = (session as any)?.user?.guestId as string | null
+  const guestBooking = await getBookings(guestId ?? '')
   const guestBookingIds: number[] = guestBooking.map((booking) => booking.id)
   console.log(guestBookingIds, bookingId)
-  if (!guestBookingIds.includes(parseInt(bookingId))) throw new Error('You are not authorized to update this reservation!')
+  if (!guestBookingIds.includes(parseInt(bookingId)))
+    throw new Error('You are not authorized to update this reservation!')
 
   const updateData = { numGuests, observations }
 
