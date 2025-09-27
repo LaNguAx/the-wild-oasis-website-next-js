@@ -80,10 +80,12 @@ export async function getBookings(guestId: string) {
   // Ensure nested relation `cabins` is a single object, not an array
   type CabinRef = { name: string; image: string }
   const normalized = (data ?? []).map((booking) => {
-    const cabins = (booking as { cabins?: CabinRef | CabinRef[] }).cabins
+    const cabinsField = (booking as { cabins?: CabinRef | CabinRef[] | null }).cabins
+    const cabinsObj = Array.isArray(cabinsField) ? cabinsField[0] : cabinsField
+    const cabins: CabinRef = cabinsObj ?? { name: '', image: '' }
     return {
       ...booking,
-      cabins: Array.isArray(cabins) ? cabins[0] : cabins,
+      cabins,
     }
   })
 
