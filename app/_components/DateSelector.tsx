@@ -5,7 +5,7 @@ import { Cabin } from './CabinCard'
 import { useReservation } from './ReservationContext'
 import { differenceInDays, isBefore, isSameDay, startOfToday } from 'date-fns'
 
-// (reserved) Helper could be added here in future to validate booked dates
+// / (reserved) Helper could be added here in future to validate booked dates
 
 type Settings = {
   minBookingLength: number
